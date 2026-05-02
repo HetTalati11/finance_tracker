@@ -79,6 +79,8 @@ const sampleCsv = `Date,Description,Amount
 2026-05-02,TFL Travel Charge,-6.80`;
 
 const state = {
+  importedTransactions: [],
+  manualTransactions: [],
   transactions: [],
   selectedMonth: "all",
   search: "",
@@ -103,7 +105,17 @@ const els = {
   insightsList: document.querySelector("#insightsList"),
   searchInput: document.querySelector("#searchInput"),
   transactionsBody: document.querySelector("#transactionsBody"),
+  entryForm: document.querySelector("#entryForm"),
+  entryDate: document.querySelector("#entryDate"),
+  entryDescription: document.querySelector("#entryDescription"),
+  entryType: document.querySelector("#entryType"),
+  entryAmount: document.querySelector("#entryAmount"),
+  exportBtn: document.querySelector("#exportBtn"),
+  clearManualBtn: document.querySelector("#clearManualBtn"),
+  ledgerStatus: document.querySelector("#ledgerStatus"),
 };
+
+const manualStorageKey = "financeAnalyst.manualTransactions.v1";
 
 const currency = new Intl.NumberFormat("en-GB", {
   style: "currency",
@@ -164,6 +176,7 @@ function parseCsv(text) {
       description,
       amount: Number.isFinite(amount) ? amount : 0,
       category,
+      source: "import",
     };
   }).filter((transaction) => transaction.date && transaction.amount !== 0);
 }
@@ -324,6 +337,7 @@ function generateInsights(summary, transactions) {
 }
 
 function render() {
+  syncTransactions();
   renderCategoryKey();
   renderMonths();
 
@@ -415,7 +429,7 @@ function renderInsights(insights) {
 
 function renderTransactions(transactions) {
   if (!transactions.length) {
-    els.transactionsBody.innerHTML = `<tr><td colspan="4" class="empty-row">No matching transactions.</td></tr>`;
+    els.transactionsBody.innerHTML = `<tr><td colspan="5" class="empty-row">No matching transactions.</td></tr>`;
     return;
   }
 
@@ -424,6 +438,7 @@ function renderTransactions(transactions) {
       <td>${new Date(transaction.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
       <td>${escapeHtml(transaction.description)}</td>
       <td><span class="category-pill" style="color:${transaction.category.color}">${transaction.category.name}</span></td>
+      <td><span class="source-pill ${transaction.source === "manual" ? "manual-source" : ""}">${transaction.source || "import"}</span></td>
       <td class="amount-col ${transaction.amount < 0 ? "amount-negative" : "amount-positive"}">${currency.format(transaction.amount)}</td>
     </tr>
   `).join("");
@@ -440,7 +455,7 @@ function escapeHtml(value) {
 
 function loadCsv(text, sourceName) {
   const transactions = parseCsv(text);
-  state.transactions = transactions;
+  state.importedTransactions = transactions;
   state.selectedMonth = "all";
   els.searchInput.value = "";
   state.search = "";
@@ -448,6 +463,108 @@ function loadCsv(text, sourceName) {
     ? `${transactions.length} transactions loaded from ${sourceName}.`
     : `No transactions found in ${sourceName}.`;
   render();
+}
+
+function syncTransactions() {
+  state.transactions = [...state.importedTransactions, ...state.manualTransactions];
+  if (els.ledgerStatus) {
+    const manualCount = state.manualTransactions.length;
+    const importedCount = state.importedTransactions.length;
+    els.ledgerStatus.textContent = `${manualCount} manual and ${importedCount} imported transactions are active. Export creates an Excel-ready CSV.`;
+  }
+}
+
+function loadManualTransactions() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(manualStorageKey) || "[]");
+    state.manualTransactions = saved.map((transaction) => ({
+      ...transaction,
+      category: categorise(transaction.description, transaction.amount),
+      source: "manual",
+    })).filter((transaction) => transaction.date && transaction.description && Number.isFinite(transaction.amount));
+  } catch {
+    state.manualTransactions = [];
+  }
+}
+
+function saveManualTransactions() {
+  const payload = state.manualTransactions.map((transaction) => ({
+    id: transaction.id,
+    date: transaction.date,
+    description: transaction.description,
+    amount: transaction.amount,
+  }));
+  localStorage.setItem(manualStorageKey, JSON.stringify(payload));
+}
+
+function addManualTransaction(event) {
+  event.preventDefault();
+
+  const amountValue = Number(els.entryAmount.value);
+  if (!els.entryDate.value || !els.entryDescription.value.trim() || !Number.isFinite(amountValue) || amountValue <= 0) return;
+
+  const signedAmount = els.entryType.value === "income" ? amountValue : -amountValue;
+  const description = els.entryDescription.value.trim();
+  const transaction = {
+    id: `manual-${Date.now()}`,
+    date: els.entryDate.value,
+    description,
+    amount: signedAmount,
+    category: categorise(description, signedAmount),
+    source: "manual",
+  };
+
+  state.manualTransactions.push(transaction);
+  saveManualTransactions();
+  els.entryForm.reset();
+  setDefaultEntryDate();
+  render();
+}
+
+function clearManualTransactions() {
+  if (!state.manualTransactions.length) return;
+  if (!confirm("Clear all manual entries saved in this browser? Imported CSV transactions will stay loaded.")) return;
+  state.manualTransactions = [];
+  saveManualTransactions();
+  render();
+}
+
+function exportTransactions() {
+  syncTransactions();
+  const rows = [
+    ["Date", "Description", "Category", "Amount", "Source"],
+    ...state.transactions
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((transaction) => [
+        transaction.date,
+        transaction.description,
+        transaction.category.name,
+        transaction.amount.toFixed(2),
+        transaction.source || "import",
+      ]),
+  ];
+  const csv = rows.map((row) => row.map(csvCell).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `finance-ledger-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value) {
+  const text = String(value ?? "");
+  if (!/[",\n\r]/.test(text)) return text;
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function setDefaultEntryDate() {
+  if (els.entryDate && !els.entryDate.value) {
+    els.entryDate.value = new Date().toISOString().slice(0, 10);
+  }
 }
 
 els.csvFile.addEventListener("change", async (event) => {
@@ -468,4 +585,10 @@ els.searchInput.addEventListener("input", (event) => {
   render();
 });
 
+els.entryForm.addEventListener("submit", addManualTransaction);
+els.exportBtn.addEventListener("click", exportTransactions);
+els.clearManualBtn.addEventListener("click", clearManualTransactions);
+
+loadManualTransactions();
+setDefaultEntryDate();
 render();
