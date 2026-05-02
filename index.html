@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Personal Finance AI Analyst</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">P</div>
+          <div>
+            <p class="eyebrow">MVP</p>
+            <h1>Finance Analyst</h1>
+          </div>
+        </div>
+
+        <section class="upload-panel">
+          <label class="upload-box" for="csvFile">
+            <span class="upload-icon">+</span>
+            <strong>Import CSV</strong>
+            <span>Monzo, HSBC, Starling, Lloyds, NatWest or custom exports</span>
+          </label>
+          <input id="csvFile" type="file" accept=".csv,text/csv" />
+          <button id="sampleBtn" class="secondary-button" type="button">Load sample data</button>
+          <p id="fileStatus" class="muted">No file loaded yet.</p>
+        </section>
+
+        <section class="filters">
+          <label for="monthSelect">Month</label>
+          <select id="monthSelect"></select>
+        </section>
+
+        <section class="category-key" id="categoryKey"></section>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Personal Finance AI Analyst</p>
+            <h2>Monthly spending, categorised and explained</h2>
+          </div>
+          <div class="health-score">
+            <span>Financial health</span>
+            <strong id="healthScore">--</strong>
+          </div>
+        </header>
+
+        <section class="metrics-grid">
+          <article class="metric">
+            <span>Total spend</span>
+            <strong id="totalSpend">GBP 0</strong>
+            <small id="totalSpendHint">Upload transactions to begin</small>
+          </article>
+          <article class="metric">
+            <span>Income</span>
+            <strong id="totalIncome">GBP 0</strong>
+            <small id="incomeHint">Detected from positive transactions</small>
+          </article>
+          <article class="metric">
+            <span>Net cashflow</span>
+            <strong id="netCashflow">GBP 0</strong>
+            <small id="cashflowHint">Income minus spending</small>
+          </article>
+          <article class="metric">
+            <span>Top category</span>
+            <strong id="topCategory">--</strong>
+            <small id="topCategoryHint">Largest spend area</small>
+          </article>
+        </section>
+
+        <section class="main-grid">
+          <article class="panel breakdown-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Spend breakdown</p>
+                <h3>Where the money went</h3>
+              </div>
+            </div>
+            <div id="breakdownChart" class="breakdown-chart empty-state">Load a CSV to see category spend.</div>
+          </article>
+
+          <article class="panel insights-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">AI analyst</p>
+                <h3>Insights</h3>
+              </div>
+            </div>
+            <div id="insightsList" class="insights-list empty-state">Insights will appear after import.</div>
+          </article>
+        </section>
+
+        <section class="panel transactions-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Categorised transactions</p>
+              <h3>Review and refine</h3>
+            </div>
+            <input id="searchInput" class="search" type="search" placeholder="Search transactions" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th class="amount-col">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsBody">
+                <tr>
+                  <td colspan="4" class="empty-row">Upload a CSV or load the sample data.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template id="categoryPillTemplate">
+      <span class="category-pill"></span>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
