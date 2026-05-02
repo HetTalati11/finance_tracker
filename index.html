@@ -74,6 +74,42 @@
           </article>
         </section>
 
+        <section class="panel entry-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Live ledger</p>
+              <h3>Add income or expense</h3>
+            </div>
+            <div class="ledger-actions">
+              <button id="exportBtn" class="secondary-button compact-button" type="button">Export CSV</button>
+              <button id="clearManualBtn" class="ghost-button" type="button">Clear manual entries</button>
+            </div>
+          </div>
+          <form id="entryForm" class="entry-form">
+            <label>
+              <span>Date</span>
+              <input id="entryDate" type="date" required />
+            </label>
+            <label class="entry-description">
+              <span>Description</span>
+              <input id="entryDescription" type="text" placeholder="e.g. Tesco, salary, train fare" required />
+            </label>
+            <label>
+              <span>Type</span>
+              <select id="entryType">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </label>
+            <label>
+              <span>Amount</span>
+              <input id="entryAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required />
+            </label>
+            <button class="primary-button" type="submit">Add</button>
+          </form>
+          <p id="ledgerStatus" class="muted">Manual entries are saved in this browser and included in exports.</p>
+        </section>
+
         <section class="main-grid">
           <article class="panel breakdown-panel">
             <div class="panel-heading">
@@ -111,12 +147,13 @@
                   <th>Date</th>
                   <th>Description</th>
                   <th>Category</th>
+                  <th>Source</th>
                   <th class="amount-col">Amount</th>
                 </tr>
               </thead>
               <tbody id="transactionsBody">
                 <tr>
-                  <td colspan="4" class="empty-row">Upload a CSV or load the sample data.</td>
+                  <td colspan="5" class="empty-row">Upload a CSV or load the sample data.</td>
                 </tr>
               </tbody>
             </table>
