@@ -92,6 +92,7 @@ h3 {
 
 .upload-panel,
 .filters,
+.live-config,
 .category-key {
   margin-bottom: 24px;
 }
@@ -107,6 +108,11 @@ h3 {
   background: rgba(255, 253, 248, 0.55);
   text-align: center;
   cursor: pointer;
+}
+
+.compact-upload {
+  min-height: 142px;
+  padding: 18px;
 }
 
 .upload-box span:last-child {
@@ -191,7 +197,8 @@ label {
 }
 
 select,
-.search {
+.search,
+.live-config input {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--line);
@@ -199,6 +206,16 @@ select,
   background: var(--panel);
   color: var(--ink);
   padding: 0 12px;
+}
+
+.live-config label {
+  margin-top: 12px;
+}
+
+.live-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .key-item {
@@ -260,7 +277,7 @@ select,
 
 .metrics-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 16px;
+  margin: 0 0 16px;
 }
 
 .metric,
@@ -293,7 +310,8 @@ select,
 }
 
 .entry-panel {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  border-color: rgba(17, 97, 73, 0.32);
 }
 
 .ledger-actions {
@@ -527,7 +545,8 @@ th {
 
   .topbar,
   .panel-heading,
-  .ledger-actions {
+  .ledger-actions,
+  .live-actions {
     display: grid;
   }
 
