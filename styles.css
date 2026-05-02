@@ -148,6 +148,34 @@ h3 {
   cursor: pointer;
 }
 
+.primary-button,
+.ghost-button {
+  min-height: 42px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  padding: 0 18px;
+}
+
+.ghost-button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 0 10px;
+}
+
+.compact-button {
+  width: auto;
+  min-height: 42px;
+  margin-top: 0;
+}
+
 .muted {
   margin: 12px 0 0;
   color: var(--muted);
@@ -262,6 +290,43 @@ select,
 .main-grid {
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
   margin-bottom: 16px;
+}
+
+.entry-panel {
+  margin-bottom: 16px;
+}
+
+.ledger-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.entry-form {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.7fr) minmax(220px, 1.6fr) minmax(120px, 0.7fr) minmax(120px, 0.8fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.entry-form label {
+  margin-bottom: 0;
+}
+
+.entry-form label span {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.entry-form input,
+.entry-form select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffdf8;
+  color: var(--ink);
+  padding: 0 12px;
 }
 
 .panel {
@@ -391,6 +456,24 @@ th {
   font-weight: 800;
 }
 
+.source-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #e8e2d6;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.manual-source {
+  background: #dfeee7;
+  color: var(--accent);
+}
+
 .amount-negative {
   color: #a43f25;
   font-weight: 800;
@@ -426,6 +509,14 @@ th {
   .main-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .entry-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .entry-description {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 720px) {
@@ -435,7 +526,8 @@ th {
   }
 
   .topbar,
-  .panel-heading {
+  .panel-heading,
+  .ledger-actions {
     display: grid;
   }
 
@@ -455,5 +547,15 @@ th {
 
   .search {
     max-width: none;
+  }
+
+  .entry-form {
+    grid-template-columns: 1fr;
+  }
+
+  .compact-button,
+  .ghost-button,
+  .primary-button {
+    width: 100%;
   }
 }
