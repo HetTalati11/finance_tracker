@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -36,6 +37,26 @@
           <select id="monthSelect"></select>
         </section>
 
+        <section class="live-config">
+          <p class="eyebrow">Live sync</p>
+          <label for="sheetWriteUrl">Spreadsheet write URL</label>
+          <input id="sheetWriteUrl" type="url" placeholder="Apps Script web app URL" />
+          <label for="sheetReadUrl">Spreadsheet read URL</label>
+          <input id="sheetReadUrl" type="url" placeholder="Apps Script CSV URL" />
+          <label for="refreshHours">Pull every</label>
+          <select id="refreshHours">
+            <option value="1">1 hour</option>
+            <option value="6">6 hours</option>
+            <option value="12">12 hours</option>
+            <option value="24" selected>24 hours</option>
+          </select>
+          <div class="live-actions">
+            <button id="saveLiveBtn" class="secondary-button compact-button" type="button">Save</button>
+            <button id="syncNowBtn" class="ghost-button" type="button">Sync now</button>
+          </div>
+          <p id="syncStatus" class="muted">Live spreadsheet sync is not configured yet.</p>
+        </section>
+
         <section class="category-key" id="categoryKey"></section>
       </aside>
 
@@ -52,120 +73,50 @@
         </header>
 
         <section class="metrics-grid">
-          <article class="metric">
-            <span>Total spend</span>
-            <strong id="totalSpend">GBP 0</strong>
-            <small id="totalSpendHint">Upload transactions to begin</small>
-          </article>
-          <article class="metric">
-            <span>Income</span>
-            <strong id="totalIncome">GBP 0</strong>
-            <small id="incomeHint">Detected from positive transactions</small>
-          </article>
-          <article class="metric">
-            <span>Net cashflow</span>
-            <strong id="netCashflow">GBP 0</strong>
-            <small id="cashflowHint">Income minus spending</small>
-          </article>
-          <article class="metric">
-            <span>Top category</span>
-            <strong id="topCategory">--</strong>
-            <small id="topCategoryHint">Largest spend area</small>
-          </article>
+          <article class="metric"><span>Total spend</span><strong id="totalSpend">GBP 0</strong><small id="totalSpendHint">Upload transactions to begin</small></article>
+          <article class="metric"><span>Income</span><strong id="totalIncome">GBP 0</strong><small id="incomeHint">Detected from positive transactions</small></article>
+          <article class="metric"><span>Net cashflow</span><strong id="netCashflow">GBP 0</strong><small id="cashflowHint">Income minus spending</small></article>
+          <article class="metric"><span>Top category</span><strong id="topCategory">--</strong><small id="topCategoryHint">Largest spend area</small></article>
         </section>
 
         <section class="panel entry-panel">
           <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Live ledger</p>
-              <h3>Add income or expense</h3>
-            </div>
+            <div><p class="eyebrow">Live ledger</p><h3>Add income or expense</h3></div>
             <div class="ledger-actions">
               <button id="exportBtn" class="secondary-button compact-button" type="button">Export CSV</button>
               <button id="clearManualBtn" class="ghost-button" type="button">Clear manual entries</button>
             </div>
           </div>
           <form id="entryForm" class="entry-form">
-            <label>
-              <span>Date</span>
-              <input id="entryDate" type="date" required />
-            </label>
-            <label class="entry-description">
-              <span>Description</span>
-              <input id="entryDescription" type="text" placeholder="e.g. Tesco, salary, train fare" required />
-            </label>
-            <label>
-              <span>Type</span>
-              <select id="entryType">
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-              </select>
-            </label>
-            <label>
-              <span>Amount</span>
-              <input id="entryAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required />
-            </label>
+            <label><span>Date</span><input id="entryDate" type="date" required /></label>
+            <label class="entry-description"><span>Description</span><input id="entryDescription" type="text" placeholder="e.g. Tesco, salary, train fare" required /></label>
+            <label><span>Type</span><select id="entryType"><option value="expense">Expense</option><option value="income">Income</option></select></label>
+            <label><span>Amount</span><input id="entryAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required /></label>
             <button class="primary-button" type="submit">Add</button>
           </form>
           <p id="ledgerStatus" class="muted">Manual entries are saved in this browser and included in exports.</p>
         </section>
 
         <section class="main-grid">
-          <article class="panel breakdown-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Spend breakdown</p>
-                <h3>Where the money went</h3>
-              </div>
-            </div>
-            <div id="breakdownChart" class="breakdown-chart empty-state">Load a CSV to see category spend.</div>
-          </article>
-
-          <article class="panel insights-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">AI analyst</p>
-                <h3>Insights</h3>
-              </div>
-            </div>
-            <div id="insightsList" class="insights-list empty-state">Insights will appear after import.</div>
-          </article>
+          <article class="panel breakdown-panel"><div class="panel-heading"><div><p class="eyebrow">Spend breakdown</p><h3>Where the money went</h3></div></div><div id="breakdownChart" class="breakdown-chart empty-state">Load a CSV to see category spend.</div></article>
+          <article class="panel insights-panel"><div class="panel-heading"><div><p class="eyebrow">AI analyst</p><h3>Insights</h3></div></div><div id="insightsList" class="insights-list empty-state">Insights will appear after import.</div></article>
         </section>
 
         <section class="panel transactions-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Categorised transactions</p>
-              <h3>Review and refine</h3>
-            </div>
-            <input id="searchInput" class="search" type="search" placeholder="Search transactions" />
-          </div>
+          <div class="panel-heading"><div><p class="eyebrow">Categorised transactions</p><h3>Review and refine</h3></div><input id="searchInput" class="search" type="search" placeholder="Search transactions" /></div>
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Category</th>
-                  <th>Source</th>
-                  <th class="amount-col">Amount</th>
-                </tr>
-              </thead>
-              <tbody id="transactionsBody">
-                <tr>
-                  <td colspan="5" class="empty-row">Upload a CSV or load the sample data.</td>
-                </tr>
-              </tbody>
+              <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Source</th><th class="amount-col">Amount</th></tr></thead>
+              <tbody id="transactionsBody"><tr><td colspan="5" class="empty-row">Upload a CSV or load the sample data.</td></tr></tbody>
             </table>
           </div>
         </section>
       </section>
     </main>
 
-    <template id="categoryPillTemplate">
-      <span class="category-pill"></span>
-    </template>
-
+    <template id="categoryPillTemplate"><span class="category-pill"></span></template>
+    <iframe id="sheetSubmitFrame" name="sheetSubmitFrame" title="Spreadsheet submit target" hidden></iframe>
     <script src="app.js"></script>
+    <script src="live-sync.js"></script>
   </body>
 </html>
