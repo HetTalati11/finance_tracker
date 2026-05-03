@@ -1,8 +1,6 @@
 # Personal Finance AI Analyst
 
-A personal-use finance tracker built as a portfolio project. The app lets me capture expenses from any device, sync them into a live Google Sheet, pull the ledger back into a browser dashboard, categorise transactions, and generate AI-style spending insights.
-
-Live app: `https://hettalati11.github.io/finance_tracker/`
+A personal-use finance tracker. The app lets me record expenses from any device, sync them into a live Google Sheet, pull the ledger back into a browser dashboard, categorise transactions, and generate AI-style spending insights.
 
 ## Why I Built This
 
@@ -12,8 +10,6 @@ I wanted a lightweight finance workflow that fits how I actually spend money:
 - Keep the source data in a spreadsheet that I can inspect and edit.
 - Pull the data into a dashboard automatically.
 - Spot overspending areas, behavioural patterns, and savings opportunities.
-
-The goal was not to build a bank-grade finance platform. It was to build a polished, useful MVP that demonstrates product thinking, frontend engineering, spreadsheet automation, and data analysis.
 
 ## Core Workflow
 
@@ -38,7 +34,6 @@ If live sync is not configured, entries are saved locally in the browser with `l
 - Category spend breakdown.
 - AI-style deterministic insights for overspending, savings opportunities, and behavioural patterns.
 - CSV export for Excel-compatible backups.
-- Basic PWA support through a manifest and service worker.
 
 ## Technical Overview
 
@@ -52,17 +47,6 @@ The project is intentionally lightweight:
 - `.github/workflows/deploy-pages.yml` supports GitHub Pages deployment.
 
 There is no traditional backend server. Google Sheets acts as the live data store, while Apps Script provides a simple write/read interface.
-
-## Data Flow
-
-```mermaid
-flowchart LR
-  User["Phone or laptop"] --> App["Static web app"]
-  App -->|POST new entry| Script["Google Apps Script"]
-  Script --> Sheet["Google Sheet ledger"]
-  App -->|Pull CSV feed every 24h or on demand| Script
-  App --> Dashboard["Metrics, categories, insights"]
-```
 
 ## Google Sheets Setup
 
@@ -97,35 +81,3 @@ The importer recognises common bank-export column names:
 - Split amount columns: `Money Out`, `Paid Out`, `Debit`, `Withdrawal`, `Money In`, `Paid In`, `Credit`, `Deposit`
 
 Negative amounts are treated as spending. Positive amounts are treated as income.
-
-## Privacy And Security Notes
-
-This is a personal portfolio MVP, not a production finance product.
-
-- No bank account connection is used.
-- No financial data is committed to the repository.
-- The sample CSV contains synthetic data.
-- Live sync URLs are stored locally in the browser.
-- Anyone with the Apps Script URL could submit rows, so the URL should be treated as private.
-
-For production use, the next step would be authenticated write access through a backend or OAuth flow.
-
-## What This Demonstrates
-
-- Product scoping for a useful MVP.
-- Responsive frontend implementation.
-- Browser-side CSV parsing and data transformation.
-- Spreadsheet automation with Google Apps Script.
-- Progressive enhancement: works locally, improves with live sync.
-- Practical tradeoffs between simplicity, privacy, and deployability.
-- Clear documentation for setup and future extension.
-
-## Future Improvements
-
-- Add authenticated Google/Microsoft OAuth.
-- Replace deterministic insights with a real LLM summarisation layer.
-- Add editable categories and category rules.
-- Add charts for month-over-month trends.
-- Add recurring-payment detection.
-- Add automated tests for CSV parsing and insight generation.
-- Build an Excel-native version with Microsoft Graph and OneDrive tables.
